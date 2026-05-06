@@ -31,7 +31,7 @@ Eleifend imperdiet primis quam conubia sapien lacus nec sagittis curabitur. Dapi
 @benchmark
 def benchmark_large_static_text(canvas):
 
-    renderer = gfx.WgpuRenderer(canvas, blend_mode="ordered1")
+    renderer = gfx.WgpuRenderer(canvas)
 
     scene = gfx.Scene()
 
@@ -48,19 +48,19 @@ def benchmark_large_static_text(canvas):
     renderer.request_draw(lambda: renderer.render(scene, camera))
 
     # First draw to load stuff in memory
-    canvas._draw_frame_and_present()
+    canvas.force_draw()
 
     yield None
 
     while True:
-        canvas._draw_frame_and_present()  # includes time to take screenshot
+        canvas.force_draw()  # includes time to take screenshot
         yield  # renderer.stats["gpu_times"]
 
 
 @benchmark
 def benchmark_changing_one_word_in_big_text(canvas):
 
-    renderer = gfx.WgpuRenderer(canvas, blend_mode="ordered1")
+    renderer = gfx.WgpuRenderer(canvas)
 
     scene = gfx.Scene()
 
@@ -76,7 +76,7 @@ def benchmark_changing_one_word_in_big_text(canvas):
     renderer.request_draw(lambda: renderer.render(scene, camera))
 
     # First draw to load stuff in memory
-    canvas._draw_frame_and_present()
+    canvas.force_draw()
 
     alt_words = list(set(big_text.split()))
 
@@ -86,14 +86,14 @@ def benchmark_changing_one_word_in_big_text(canvas):
         new_word = random.choice(alt_words)
         tob.geometry.set_text(big_text.replace("Himenaeos", new_word))
         tob.geometry._on_update_object()
-        # canvas._draw_frame_and_present()
+        # canvas.force_draw()
         yield
 
 
 @benchmark(1000)
 def benchmark_changing_one_word_in_small_text(canvas):
 
-    renderer = gfx.WgpuRenderer(canvas, blend_mode="ordered1")
+    renderer = gfx.WgpuRenderer(canvas)
 
     scene = gfx.Scene()
 
@@ -109,7 +109,7 @@ def benchmark_changing_one_word_in_small_text(canvas):
     renderer.request_draw(lambda: renderer.render(scene, camera))
 
     # First draw to load stuff in memory
-    canvas._draw_frame_and_present()
+    canvas.force_draw()
 
     alt_words = list(set(big_text.split()))
 
@@ -119,7 +119,7 @@ def benchmark_changing_one_word_in_small_text(canvas):
         new_text = f"{random.randint(10, 500)} fps"
         tob.geometry.set_text(new_text)
         tob.geometry._on_update_object()
-        # canvas._draw_frame_and_present()  # include buffer updates
+        # canvas.force_draw()  # include buffer updates
         yield
 
 
@@ -139,7 +139,7 @@ def multitext_geometry(canvas):
 
 def benchmark_multi_text(canvas, use_multi_text):
 
-    renderer = gfx.WgpuRenderer(canvas, blend_mode="ordered1")
+    renderer = gfx.WgpuRenderer(canvas)
 
     scene = gfx.Scene()
 
@@ -191,18 +191,18 @@ def benchmark_multi_text(canvas, use_multi_text):
     renderer.request_draw(lambda: renderer.render(scene, camera))
 
     # First draw to load stuff in memory
-    canvas._draw_frame_and_present()
+    canvas.force_draw()
 
     yield None
 
     while True:
-        canvas._draw_frame_and_present()  # includes time to take screenshot
+        canvas.force_draw()  # includes time to take screenshot
         yield  # renderer.stats["gpu_times"]
 
 
 
 if __name__ == "__main__":
-    from wgpu.gui.auto import WgpuCanvas
+    from rendercanvas.auto import RenderCanvas as WgpuCanvas
 
     c = None
     # c = WgpuCanvas()

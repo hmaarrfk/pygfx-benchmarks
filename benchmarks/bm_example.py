@@ -19,6 +19,6 @@ def my_benchmark(canvas):
 
 
 if __name__ == "__main__":
-    from wgpu.gui.auto import WgpuCanvas
+    from rendercanvas.auto import RenderCanvas as WgpuCanvas
 
     run_all(globals())

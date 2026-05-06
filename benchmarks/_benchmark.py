@@ -6,7 +6,7 @@ import gc
 import time
 
 import numpy as np
-from wgpu.gui.offscreen import WgpuCanvas as OffscreenWgpuCanvas, run
+from rendercanvas.offscreen import RenderCanvas as OffscreenWgpuCanvas
 import pygfx as gfx
 
 gfx.renderers.wgpu.enable_wgpu_features("timestamp-query")
