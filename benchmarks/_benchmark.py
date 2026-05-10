@@ -6,7 +6,7 @@ import gc
 import time
 
 import numpy as np
-from rendercanvas.offscreen import RenderCanvas as OffscreenWgpuCanvas
+from rendercanvas.offscreen import RenderCanvas as OffscreenRenderCanvas
 import pygfx as gfx
 
 gfx.renderers.wgpu.enable_wgpu_features("timestamp-query")
@@ -96,7 +96,7 @@ def run_all(dict, canvas=None):
             benchmark_funcs.append(ob)
 
     if canvas is None:
-        canvas = OffscreenWgpuCanvas()
+        canvas = OffscreenRenderCanvas()
 
     for func in benchmark_funcs:
         func(canvas)
