@@ -17,8 +17,7 @@ def benchmark_points(canvas, n_objects, n_verts, *, clipping_planes=None):
     if clipping_planes is None:
         clipping_planes = []
 
-    renderer = gfx.WgpuRenderer(canvas, blend_mode="ordered2")
-    renderer.measure_gpu_times = True
+    renderer = gfx.WgpuRenderer(canvas)
 
     scene = gfx.Scene()
 
@@ -42,12 +41,12 @@ def benchmark_points(canvas, n_objects, n_verts, *, clipping_planes=None):
     canvas.request_draw(lambda: renderer.render(scene, camera))
 
     # First draw to load stuff in memory
-    canvas._draw_frame_and_present()
+    canvas.force_draw()
 
     yield None
 
     while True:
-        canvas._draw_frame_and_present()  # includes time to take screenshot
+        canvas.force_draw()  # includes time to take screenshot
         yield  # renderer.stats["gpu_times"]
 
 
@@ -160,7 +159,7 @@ def benchmark_points_1_1m_twenty_clipping_planes(canvas):
 
 
 if __name__ == "__main__":
-    from wgpu.gui.auto import WgpuCanvas
+    from rendercanvas.auto import RenderCanvas as WgpuCanvas
 
     c = None  # WgpuCanvas()
     run_all(globals(), c)
