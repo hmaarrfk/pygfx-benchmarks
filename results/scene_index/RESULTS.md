@@ -1,5 +1,10 @@
 # Scene-graph traversal: incremental index results
 
+> See also [`render_loop_optimizations.md`](render_loop_optimizations.md) for the
+> per-commit progression (main → tip) of the render-loop optimizations on both an
+> Apple M5 Max and a low-power Intel i7-1180G7 (~15.7× / ~14× for a moving camera).
+
+
 Benchmark: [`benchmarks/bm_scene_index.py`](../../benchmarks/bm_scene_index.py)
 
 These numbers compare the per-render scene-graph traversal cost in pygfx
