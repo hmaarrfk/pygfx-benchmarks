@@ -1,0 +1,65 @@
+# Intel Core Ultra 7 270K + NVIDIA RTX 4090 (Vulkan), cpufreq governor powersave.
+# main = 107a4d1, PR #13 = b8e8e3d. m2 = main, b2 = PR. Main and PR alternate within each round.
+## stock: env identical to nano (Python 3.13.18, numpy 2.5.5, conda-forge wgpu-py 0.33.0 / wgpu-native, rendercanvas 3.0.1)
+## round 3 was ~2x slower for both builds (background load); medians use all 3 rounds
+round1 m2 separate 100     full-frame ms: median     1.11  runs 1.11
+round1 m2 separate 1000    full-frame ms: median     5.37  runs 5.37
+round1 m2 separate 3000    full-frame ms: median    18.56  runs 18.56
+round1 m2 separate 30000   full-frame ms: median   220.69  runs 220.69
+round1 m2 batched 30000    full-frame ms: median     0.88  runs 0.88
+round1 b2 separate 100     full-frame ms: median     0.79  runs 0.79
+round1 b2 separate 1000    full-frame ms: median     2.30  runs 2.30
+round1 b2 separate 3000    full-frame ms: median     6.93  runs 6.93
+round1 b2 separate 30000   full-frame ms: median    90.71  runs 90.71
+round1 b2 batched 30000    full-frame ms: median     0.82  runs 0.82
+round2 m2 separate 100     full-frame ms: median     1.10  runs 1.10
+round2 m2 separate 1000    full-frame ms: median     5.42  runs 5.42
+round2 m2 separate 3000    full-frame ms: median    18.75  runs 18.75
+round2 m2 separate 30000   full-frame ms: median   221.68  runs 221.68
+round2 m2 batched 30000    full-frame ms: median     0.89  runs 0.89
+round2 b2 separate 100     full-frame ms: median     0.78  runs 0.78
+round2 b2 separate 1000    full-frame ms: median     2.31  runs 2.31
+round2 b2 separate 3000    full-frame ms: median     7.59  runs 7.59
+round2 b2 separate 30000   full-frame ms: median   136.37  runs 136.37
+round2 b2 batched 30000    full-frame ms: median     1.08  runs 1.08
+round3 m2 separate 100     full-frame ms: median     2.49  runs 2.49
+round3 m2 separate 1000    full-frame ms: median    15.59  runs 15.59
+round3 m2 separate 3000    full-frame ms: median    44.02  runs 44.02
+round3 m2 separate 30000   full-frame ms: median   423.49  runs 423.49
+round3 m2 batched 30000    full-frame ms: median     2.45  runs 2.45
+round3 b2 separate 100     full-frame ms: median     1.65  runs 1.65
+round3 b2 separate 1000    full-frame ms: median     7.92  runs 7.92
+round3 b2 separate 3000    full-frame ms: median    20.09  runs 20.09
+round3 b2 separate 30000   full-frame ms: median   105.52  runs 105.52
+round3 b2 batched 30000    full-frame ms: median     0.89  runs 0.89
+## dawn: Python 3.14.7, wgpu via wgpudawn 0.32.0.4 (Dawn)
+round1 m2 separate 100     full-frame ms: median     0.90  runs 0.90
+round1 m2 separate 1000    full-frame ms: median     3.88  runs 3.88
+round1 m2 separate 3000    full-frame ms: median    13.80  runs 13.80
+round1 m2 separate 30000   full-frame ms: median   181.73  runs 181.73
+round1 m2 batched 30000    full-frame ms: median     0.57  runs 0.57
+round1 b2 separate 100     full-frame ms: median     0.67  runs 0.67
+round1 b2 separate 1000    full-frame ms: median     1.60  runs 1.60
+round1 b2 separate 3000    full-frame ms: median     5.30  runs 5.30
+round1 b2 separate 30000   full-frame ms: median    73.98  runs 73.98
+round1 b2 batched 30000    full-frame ms: median     0.54  runs 0.54
+round2 m2 separate 100     full-frame ms: median     0.89  runs 0.89
+round2 m2 separate 1000    full-frame ms: median     3.91  runs 3.91
+round2 m2 separate 3000    full-frame ms: median    13.83  runs 13.83
+round2 m2 separate 30000   full-frame ms: median   173.68  runs 173.68
+round2 m2 batched 30000    full-frame ms: median     0.57  runs 0.57
+round2 b2 separate 100     full-frame ms: median     0.67  runs 0.67
+round2 b2 separate 1000    full-frame ms: median     1.61  runs 1.61
+round2 b2 separate 3000    full-frame ms: median     4.77  runs 4.77
+round2 b2 separate 30000   full-frame ms: median    74.44  runs 74.44
+round2 b2 batched 30000    full-frame ms: median     0.53  runs 0.53
+round3 m2 separate 100     full-frame ms: median     0.89  runs 0.89
+round3 m2 separate 1000    full-frame ms: median     3.85  runs 3.85
+round3 m2 separate 3000    full-frame ms: median    13.95  runs 13.95
+round3 m2 separate 30000   full-frame ms: median   174.54  runs 174.54
+round3 m2 batched 30000    full-frame ms: median     0.69  runs 0.69
+round3 b2 separate 100     full-frame ms: median     0.66  runs 0.66
+round3 b2 separate 1000    full-frame ms: median     1.59  runs 1.59
+round3 b2 separate 3000    full-frame ms: median     4.63  runs 4.63
+round3 b2 separate 30000   full-frame ms: median    74.76  runs 74.76
+round3 b2 batched 30000    full-frame ms: median     0.54  runs 0.54

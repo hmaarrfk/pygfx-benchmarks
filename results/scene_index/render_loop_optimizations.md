@@ -165,6 +165,25 @@ Per commit (5 alternating rounds):
   less than as separate objects on main. The PR is for scenes that cannot be
   batched.
 
+
+**Same benchmark on the big machine** (Core Ultra 7 270K + RTX 4090, Vulkan),
+with an environment identical to nano's (Python 3.13.18, numpy 2.5.5,
+conda-forge wgpu-py 0.33.0): [`scene_shapes_core-ultra-7-270k.txt`](scene_shapes_core-ultra-7-270k.txt).
+
+| scene | nano main → PR | big machine main → PR | nano slower by |
+|---|---:|---:|---:|
+| 100 separate | 2.8 → 1.9 ms (1.4×) | 1.1 → 0.8 ms (1.4×) | ~2.5× |
+| 1,000 separate | 17.1 → 7.7 ms (2.2×) | 5.4 → 2.3 ms (2.3×) | ~3.3× |
+| 3,000 separate | 49.5 → 21.2 ms (2.3×) | 18.8 → 7.6 ms (2.5×) | ~2.7× |
+| 30,000 separate | 472 → 191 ms (2.5×) | 222 → 106 ms (2.1×) | ~2× |
+| 30,000 batched | 1.9 → 1.9 ms | 0.9 → 0.9 ms | ~2× |
+
+The PR's relative speedup is the same on both machines. Nano is 2–3× slower
+in absolute terms, so it saves nano about 9 ms per frame at 1,000 objects,
+against 3 ms on the big machine. On the big machine, wgpudawn (Dawn) was
+faster than stock wgpu-native for this workload: main at 1,000 objects took
+3.9 ms with Dawn and 5.4 ms with wgpu-native.
+
 ## What each commit buys (consistent across machines)
 
 * **scene-index** — modest here (1.1–1.4×): this is a *flat, depth-2* grouped
