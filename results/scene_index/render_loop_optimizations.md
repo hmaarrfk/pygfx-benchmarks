@@ -129,6 +129,42 @@ the full frame only.
   per object to check its pipeline for changes. Removing that would need
   render bundles or instancing.
 
+## nano (Intel i7-1180G7, Iris Xe): realistic scene sizes, PR on main `107a4d1`
+
+Benchmark: [`benchmarks/bm_scene_shapes.py`](../../benchmarks/bm_scene_shapes.py),
+raw data: [`scene_shapes_nano.txt`](scene_shapes_nano.txt). Full
+`renderer.render()` to a 320×240 offscreen texture, moving camera, wgpu-native
+(Vulkan), Python 3.13, AC power with the `performance` profile. The laptop
+throttles as it heats up, so main and the PR alternate within each round.
+"Separate" means one `Points` object per point, in groups of 10. "Batched"
+means the same points in one `Points` object.
+
+| scene | main | PR #13 | speedup |
+|---|---:|---:|---:|
+| 100 separate | 2.8 ms | 1.9 ms | 1.4× |
+| 1,000 separate | 17.1 ms | 7.7 ms | 2.2× |
+| 3,000 separate | 49.5 ms | 21.2 ms | 2.3× |
+| 30,000 separate | 472 ms | 191 ms | 2.5× |
+| 30,000 batched | 1.9 ms | 1.9 ms | — |
+
+Per commit (5 alternating rounds):
+
+| stage | 1,000 separate | 3,000 separate |
+|---|---:|---:|
+| main | 17.1 ms | 50.5 ms |
+| + scene index | 16.2 ms | 46.7 ms |
+| + vectorize | 13.5 ms | 37.9 ms |
+| + cache | 11.2 ms | 30.6 ms |
+| + render-pass state | 7.8 ms | 20.8 ms |
+
+* At 1,000 to 3,000 objects the PR more than doubles the frame rate on this
+  laptop (about 58 → 130 fps and 20 → 47 fps for the CPU side).
+* Every commit contributes. The render-pass state commit is the biggest single
+  step at these sizes.
+* Batching beats all of it: 30,000 points as one object take 1.9 ms, 250×
+  less than as separate objects on main. The PR is for scenes that cannot be
+  batched.
+
 ## What each commit buys (consistent across machines)
 
 * **scene-index** — modest here (1.1–1.4×): this is a *flat, depth-2* grouped
