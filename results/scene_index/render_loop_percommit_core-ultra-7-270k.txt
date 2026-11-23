@@ -1,20 +1,76 @@
-# Intel Core Ultra 7 270K Plus, Ubuntu (Linux 7.0), Python 3.14.7, numpy 2.5.5
-# cpufreq governor: powersave. pygfx main = 27a0692; PR #13 rebased onto it.
-# Stage 3 now includes what was the separate "skip-id" stage (squashed into commit 3).
-# Three back-to-back runs; the write-up uses the per-stage median.
-### 0-main (27a0692)
-run1 moving-camera :    86043.2 us   no-camera :    41738.4 us
-run2 moving-camera :    80840.5 us   no-camera :    35436.3 us
-run3 moving-camera :    81395.5 us   no-camera :    42725.8 us
-### 1-scene-index (27463d2)
-run1 moving-camera :    79367.6 us   no-camera :    34448.5 us
-run2 moving-camera :    72917.6 us   no-camera :    33456.0 us
-run3 moving-camera :    75086.3 us   no-camera :    29674.6 us
-### 2-vectorize (4f35d96)
-run1 moving-camera :    48076.3 us   no-camera :    33797.4 us
-run2 moving-camera :    40605.1 us   no-camera :    26649.2 us
-run3 moving-camera :    41047.7 us   no-camera :    26933.0 us
-### 3-cache incl. skip-id (8fac492)
-run1 moving-camera :     8022.6 us   no-camera :     6051.6 us
-run2 moving-camera :     7302.9 us   no-camera :     6220.0 us
-run3 moving-camera :     7351.6 us   no-camera :     6059.2 us
+# Intel Core Ultra 7 270K Plus, Ubuntu (Linux 7.0), Python 3.14.7, numpy 2.5.5, wgpu via Dawn
+# cpufreq governor: powersave. pygfx main = 27a0692; PR #13 tip = 8dfed66.
+# full-frame = renderer.render() to a 320x240 offscreen texture, moving camera.
+# Three rounds; each round runs every stage once.
+### run1 main 27a0692 Normalize newlines when loading shadercode (#1346)
+moving-camera :    81004.9 us
+no-camera     :    35779.8 us
+full-frame    :   163974.8 us
+### run1 stencil e6beebf Apply Material.stencil_value changes after the first draw
+moving-camera :    81040.0 us
+no-camera     :    36593.5 us
+full-frame    :   166678.6 us
+### run1 scene 05ebe02 Maintain scene-graph index incrementally; render reads flat lists
+moving-camera :    75677.2 us
+no-camera     :    29124.5 us
+full-frame    :   166054.1 us
+### run1 vec edfadc1 Vectorize FlatScene depth sort (batched transform + np.lexsort)
+moving-camera :    43399.9 us
+no-camera     :    29409.4 us
+full-frame    :   145415.4 us
+### run1 cache 2d7fcc9 Cache camera-independent FlatScene structure across frames
+moving-camera :     7870.4 us
+no-camera     :     5946.2 us
+full-frame    :    89422.3 us
+### run1 pass 8dfed66 Skip redundant render-pass state and pipeline-group lookups
+moving-camera :     6923.6 us
+no-camera     :     6119.1 us
+full-frame    :    73226.6 us
+### run2 main 27a0692 Normalize newlines when loading shadercode (#1346)
+moving-camera :    81335.8 us
+no-camera     :    34814.6 us
+full-frame    :   163606.2 us
+### run2 stencil e6beebf Apply Material.stencil_value changes after the first draw
+moving-camera :    79271.7 us
+no-camera     :    33431.1 us
+full-frame    :   161975.2 us
+### run2 scene 05ebe02 Maintain scene-graph index incrementally; render reads flat lists
+moving-camera :    69295.3 us
+no-camera     :    24489.6 us
+full-frame    :   153975.9 us
+### run2 vec edfadc1 Vectorize FlatScene depth sort (batched transform + np.lexsort)
+moving-camera :    40035.0 us
+no-camera     :    25506.5 us
+full-frame    :   119592.6 us
+### run2 cache 2d7fcc9 Cache camera-independent FlatScene structure across frames
+moving-camera :     7120.2 us
+no-camera     :     5243.4 us
+full-frame    :    87387.6 us
+### run2 pass 8dfed66 Skip redundant render-pass state and pipeline-group lookups
+moving-camera :     7053.2 us
+no-camera     :     5422.5 us
+full-frame    :    73472.0 us
+### run3 main 27a0692 Normalize newlines when loading shadercode (#1346)
+moving-camera :    82048.2 us
+no-camera     :    35827.0 us
+full-frame    :   165487.3 us
+### run3 stencil e6beebf Apply Material.stencil_value changes after the first draw
+moving-camera :    80309.1 us
+no-camera     :    33591.5 us
+full-frame    :   169497.1 us
+### run3 scene 05ebe02 Maintain scene-graph index incrementally; render reads flat lists
+moving-camera :    81518.0 us
+no-camera     :    28340.0 us
+full-frame    :   161280.0 us
+### run3 vec edfadc1 Vectorize FlatScene depth sort (batched transform + np.lexsort)
+moving-camera :    39245.9 us
+no-camera     :    25360.9 us
+full-frame    :   125251.4 us
+### run3 cache 2d7fcc9 Cache camera-independent FlatScene structure across frames
+moving-camera :     6881.4 us
+no-camera     :     5297.7 us
+full-frame    :    87788.1 us
+### run3 pass 8dfed66 Skip redundant render-pass state and pipeline-group lookups
+moving-camera :     8861.5 us
+no-camera     :     8632.4 us
+full-frame    :    92697.0 us

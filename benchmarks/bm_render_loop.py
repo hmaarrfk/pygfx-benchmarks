@@ -9,6 +9,11 @@ refreshing transforms, computing depth, and sorting. It is what the pygfx
 "incremental scene index" + render-loop optimizations target
 (pygfx issue #1298, https://github.com/hmaarrfk/pygfx/pull/13).
 
+It also times a full ``renderer.render(scene, camera)`` to an offscreen
+texture with a moving camera ("full-frame"). That adds the per-object
+pipeline lookup, the draw recording and the GPU submit to the FlatScene
+work, so it is the number a user actually sees.
+
 Run on a checkout of pygfx to measure that revision:
 
     python bm_render_loop.py            # default 3000 groups x 10 = ~33k objects
@@ -66,6 +71,16 @@ def main(n_groups=3000, n_per_group=10):
 
     print(f"moving-camera : {_bench(moving_camera):10.1f} us")
     print(f"no-camera     : {_bench(no_camera):10.1f} us")
+
+    texture = gfx.Texture(dim=2, size=(320, 240, 1), format="rgba8unorm-srgb")
+    renderer = gfx.WgpuRenderer(texture)
+
+    def full_frame():
+        frame[0] += 1
+        cam.local.x = frame[0] * 0.5
+        renderer.render(scene, cam)
+
+    print(f"full-frame    : {_bench(full_frame, n=15):10.1f} us")
 
 
 if __name__ == "__main__":

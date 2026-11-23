@@ -48,27 +48,27 @@ better; *speedup* = baseline / work. Raw output is in the sibling `*.txt` files.
 | deep_200 | 2,310.9 | 589.7 | 3.92× |
 | deep_500 | 11,313.8 | 1,640.1 | 6.90× |
 
-## Intel Core Ultra 7 270K Plus — Ubuntu (Linux 7.0), after rebase onto main `27a0692`
+## Intel Core Ultra 7 270K Plus — Ubuntu (Linux 7.0), PR rebased onto main `27a0692`
 
 Python 3.14.7, cpufreq governor `powersave`. *work* = commit 1 only (the
-change the tables above measure). *tip* = the whole rebased PR, which also
-caches the renderable structure across frames. This micro-benchmark builds
-`FlatScene` again and again on a scene that never changes, so *tip* is the
-best case for that cache. It mostly measures how cheap a cache hit is, not
-how cheap the traversal is.
+change the tables above measure). *tip* = the whole PR (`8dfed66`), which
+also caches the renderable structure across frames. This micro-benchmark
+builds `FlatScene` again and again on a scene that never changes, so *tip*
+is the best case for that cache. It mostly measures how cheap a cache hit
+is, not how cheap the traversal is.
 
 | scene | baseline (µs) | work (µs) | speedup | tip (µs) | speedup |
 |---|---:|---:|---:|---:|---:|
-| flat_500 | 197.2 | 148.9 | 1.32× | 28.2 | 7.00× |
-| flat_2000 | 896.6 | 689.9 | 1.30× | 107.8 | 8.31× |
-| flat_5000 | 2,611.1 | 1,826.4 | 1.43× | 318.2 | 8.21× |
-| flat_10000 | 9,946.7 | 4,956.8 | 2.01× | 635.0 | 15.66× |
-| grouped_50x10 | 237.7 | 162.5 | 1.46× | 32.8 | 7.25× |
-| grouped_200x10 | 1,081.2 | 825.5 | 1.31× | 129.8 | 8.33× |
-| grouped_500x10 | 3,579.7 | 2,058.7 | 1.74× | 387.1 | 9.25× |
-| deep_50 | 54.4 | 22.5 | 2.42× | 8.3 | 6.58× |
-| deep_200 | 355.2 | 85.6 | 4.15× | 25.4 | 13.98× |
-| deep_500 | 1,868.8 | 218.7 | 8.54× | 62.9 | 29.71× |
+| flat_500 | 197.2 | 148.9 | 1.32× | 30.4 | 6.48× |
+| flat_2000 | 896.6 | 689.9 | 1.30× | 116.7 | 7.68× |
+| flat_5000 | 2,611.1 | 1,826.4 | 1.43× | 352.7 | 7.40× |
+| flat_10000 | 9,946.7 | 4,956.8 | 2.01× | 720.1 | 13.81× |
+| grouped_50x10 | 237.7 | 162.5 | 1.46× | 35.9 | 6.63× |
+| grouped_200x10 | 1,081.2 | 825.5 | 1.31× | 139.1 | 7.77× |
+| grouped_500x10 | 3,579.7 | 2,058.7 | 1.74× | 432.0 | 8.29× |
+| deep_50 | 54.4 | 22.5 | 2.42× | 8.8 | 6.22× |
+| deep_200 | 355.2 | 85.6 | 4.15× | 28.0 | 12.70× |
+| deep_500 | 1,868.8 | 218.7 | 8.54× | 68.1 | 27.45× |
 
 Commit 1 alone matches the earlier machines: flat/grouped ~1.3–2×, deep up to
 ~8.5×.

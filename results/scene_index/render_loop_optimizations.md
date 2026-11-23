@@ -26,8 +26,9 @@ Raw output: [`render_loop_percommit_apple-m5-max.txt`](render_loop_percommit_app
 > and re-measured on a third machine (Intel Core Ultra 7 270K, see the
 > section below). The M5 Max and i7-1180G7 tables were measured
 > before the rebase, against the older main, and have not been re-run.
-> After the rebase the PR has three commits: *skip-id* is part of commit 3
-> (*cache*), so the new table has four rows instead of five.
+> After the rebase, *skip-id* is part of commit 3 (*cache*), and a new
+> commit 4 (*render-pass state*) speeds up drawing. The new section also
+> times a full `renderer.render()`.
 
 ## Apple M5 Max — macOS 26.4
 
@@ -73,38 +74,60 @@ Raw output: [`render_loop_percommit_apple-m5-max.txt`](render_loop_percommit_app
 | 3 cache | 28,998 | 5.64× | 6.18× |
 | 4 skip-id | 29,749 | 0.97× | 6.02× |
 
-## Intel Core Ultra 7 270K Plus — Ubuntu (Linux 7.0), after rebase onto main `27a0692`
+## Intel Core Ultra 7 270K Plus — Ubuntu (Linux 7.0), PR rebased onto main `27a0692`
 
-Python 3.14.7, numpy 2.5.5, cpufreq governor `powersave`. These are medians of
-three back-to-back runs; between runs the numbers moved by about 5–15%.
-Stage 3 includes skip-id.
+Python 3.14.7, numpy 2.5.5, wgpu via Dawn, cpufreq governor `powersave`.
+These are medians of three rounds (raw numbers in the `.txt`). The PR now
+has five commits. The first, a stencil bug fix, has no performance effect
+and is not listed below; with it, the times are within noise of main
+(moving camera 80.3 ms, full frame 166.7 ms). *skip-id* is part of commit 3.
+Commit 4 (*render-pass state*) only speeds up drawing, so it shows up in
+the full frame only.
 
-**Moving camera**
+**Moving camera** (`FlatScene` + `sort`)
 
 | commit | µs | step | cumulative |
 |---|---:|---:|---:|
-| 0 main (`27a0692`) | 81,396 | — | 1.00× |
-| 1 scene-index | 75,086 | 1.08× | 1.08× |
-| 2 vectorize | 41,048 | 1.83× | 1.98× |
-| 3 cache + skip-id | 7,352 | 5.58× | **11.07×** |
+| 0 main (`27a0692`) | 81,336 | — | 1.00× |
+| 1 scene-index | 75,677 | 1.07× | 1.07× |
+| 2 vectorize | 40,035 | 1.89× | 2.03× |
+| 3 cache + skip-id | 7,120 | 5.62× | 11.42× |
+| 4 render-pass state | 7,053 | 1.01× | **11.53×** |
 
 **No camera** (`sort_objects=False`)
 
 | commit | µs | step | cumulative |
 |---|---:|---:|---:|
-| 0 main (`27a0692`) | 41,738 | — | 1.00× |
-| 1 scene-index | 33,456 | 1.25× | 1.25× |
-| 2 vectorize | 26,933 | 1.24× | 1.55× |
-| 3 cache + skip-id | 6,059 | 4.45× | 6.89× |
+| 0 main (`27a0692`) | 35,780 | — | 1.00× |
+| 1 scene-index | 28,340 | 1.26× | 1.26× |
+| 2 vectorize | 25,506 | 1.11× | 1.40× |
+| 3 cache + skip-id | 5,298 | 4.81× | 6.75× |
+| 4 render-pass state | 6,119 | 0.87× | **5.85×** |
 
-The pattern after the rebase matches the earlier machines: vectorize gives about
-1.8× for a moving camera, and cache (+ skip-id) is still the biggest step. On
-this machine the total for a moving camera is about 11× (81 ms → 7.4 ms per
-frame). That is lower than the M5's 15.7×, but the setup is also different
-(Python 3.14, powersave governor), so do not read the gap as a regression.
-Without a camera, vectorize measured 1.24× here, where both earlier machines
-showed no effect. Stage 2 does not change that code path, so this is most
-likely run-to-run noise.
+**Full frame** (`renderer.render()` to a 320×240 offscreen texture, moving camera)
+
+| commit | µs | step | cumulative |
+|---|---:|---:|---:|
+| 0 main (`27a0692`) | 163,975 | — | 1.00× |
+| 1 scene-index | 161,280 | 1.02× | 1.02× |
+| 2 vectorize | 125,251 | 1.29× | 1.31× |
+| 3 cache + skip-id | 87,788 | 1.43× | 1.87× |
+| 4 render-pass state | 73,472 | 1.19× | **2.23×** |
+
+* The FlatScene work goes from 81 ms to 7 ms (about 11.5×), the same
+  pattern as on the other machines.
+* In a full frame, the FlatScene saving is only part of the story: drawing
+  30k objects and submitting them to the GPU remain. Commit 4 removes the
+  redundant wgpu calls (pipeline, renderstate bind group, stencil
+  reference) and the per-object pipeline lookup, which takes the frame from
+  88 ms to 73 ms. In total, a frame goes from **164 ms to 73 ms (2.2×)**.
+* Without a camera, commit 4 measured slightly slower (5.3 → 6.1 ms). That
+  is noise: commit 4 does not touch this code path, and the three runs
+  ranged from 5.4 to 8.6 ms.
+* What is left in the full frame is about 1 µs per object for drawing (one
+  bind group and one draw call through the wgpu wrapper) and about 0.5 µs
+  per object to check its pipeline for changes. Removing that would need
+  render bundles or instancing.
 
 ## What each commit buys (consistent across machines)
 
