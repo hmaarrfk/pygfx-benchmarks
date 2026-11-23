@@ -1,0 +1,20 @@
+# Intel Core Ultra 7 270K Plus, Ubuntu (Linux 7.0), Python 3.14.7, numpy 2.5.5
+# cpufreq governor: powersave. pygfx main = 27a0692; PR #13 rebased onto it.
+# Stage 3 now includes what was the separate "skip-id" stage (squashed into commit 3).
+# Three back-to-back runs; the write-up uses the per-stage median.
+### 0-main (27a0692)
+run1 moving-camera :    86043.2 us   no-camera :    41738.4 us
+run2 moving-camera :    80840.5 us   no-camera :    35436.3 us
+run3 moving-camera :    81395.5 us   no-camera :    42725.8 us
+### 1-scene-index (27463d2)
+run1 moving-camera :    79367.6 us   no-camera :    34448.5 us
+run2 moving-camera :    72917.6 us   no-camera :    33456.0 us
+run3 moving-camera :    75086.3 us   no-camera :    29674.6 us
+### 2-vectorize (4f35d96)
+run1 moving-camera :    48076.3 us   no-camera :    33797.4 us
+run2 moving-camera :    40605.1 us   no-camera :    26649.2 us
+run3 moving-camera :    41047.7 us   no-camera :    26933.0 us
+### 3-cache incl. skip-id (8fac492)
+run1 moving-camera :     8022.6 us   no-camera :     6051.6 us
+run2 moving-camera :     7302.9 us   no-camera :     6220.0 us
+run3 moving-camera :     7351.6 us   no-camera :     6059.2 us
